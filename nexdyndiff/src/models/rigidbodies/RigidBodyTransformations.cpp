@@ -1,6 +1,6 @@
-#include "rigidbody_transformations.h"
+#include "RigidBodyTransformations.h"
 
-#include "../time_integration.h"
+#include "../TimeIntegration.h"
 
 // Eigen
 Eigen::Vector3d nexdyndiff::local_to_global_point(const Eigen::Vector3d& x, const Eigen::Matrix3d& R, const Eigen::Vector3d& translation)

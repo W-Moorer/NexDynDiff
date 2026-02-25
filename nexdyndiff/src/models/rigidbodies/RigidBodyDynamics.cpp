@@ -1,7 +1,7 @@
 #include "RigidBodyDynamics.h"
 
-#include "rigidbody_transformations.h"
-#include "../time_integration.h"
+#include "RigidBodyTransformations.h"
+#include "../TimeIntegration.h"
 #include "../../utils/include.h"
 
 nexdyndiff::RigidBodyDynamics::RigidBodyDynamics(nexdyndiff::core::NexDynDiff& nexdyndiff)

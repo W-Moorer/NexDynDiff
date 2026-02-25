@@ -2,11 +2,11 @@
 
 #include <fmt/format.h>
 
-#include "../time_integration.h"
-#include "../distances.h"
-#include "../rigidbodies/rigidbody_transformations.h"
+#include "../TimeIntegration.h"
+#include "../Distances.h"
+#include "../rigidbodies/RigidBodyTransformations.h"
 #include "../../utils/include.h"
-#include "friction_geometry.h"
+#include "FrictionGeometry.h"
 
 using namespace nexdyndiff;
 

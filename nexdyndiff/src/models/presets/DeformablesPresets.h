@@ -2,7 +2,7 @@
 #include "../deformables/Deformables.h"
 #include "../interactions/Interactions.h"
 
-#include "deformables_preset_types.h"
+#include "DeformablesPresetTypes.h"
 
 namespace nexdyndiff
 {

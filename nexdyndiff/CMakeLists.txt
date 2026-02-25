@@ -71,9 +71,9 @@ set(MODELS_DEFORMABLES_FILES
 	src/models/deformables/volume/EnergyTetStrain.cpp
 	src/models/deformables/volume/EnergyTetStrain.h
 
-	src/models/deformables/deformable_tools.cpp
-	src/models/deformables/deformable_tools.h
-	src/models/deformables/deformables_energies_include.h
+	src/models/deformables/DeformableTools.cpp
+	src/models/deformables/DeformableTools.h
+	src/models/deformables/DeformablesEnergiesInclude.h
 	src/models/deformables/PointDynamics.cpp
 	src/models/deformables/PointDynamics.h
 	src/models/deformables/PointSetHandler.cpp
@@ -89,9 +89,9 @@ set(MODELS_RIGIDBODIES_FILES
 	src/models/rigidbodies/EnergyRigidBodyConstraints.h
 	src/models/rigidbodies/EnergyRigidBodyInertia.cpp
 	src/models/rigidbodies/EnergyRigidBodyInertia.h
-	src/models/rigidbodies/inertia_tensors.cpp
-	src/models/rigidbodies/inertia_tensors.h
-	src/models/rigidbodies/rigid_body_constraint_utils.h
+	src/models/rigidbodies/InertiaTensors.cpp
+	src/models/rigidbodies/InertiaTensors.h
+	src/models/rigidbodies/RigidBodyConstraintUtils.h
 	src/models/rigidbodies/RigidBodies.cpp
 	src/models/rigidbodies/RigidBodies.h
 	src/models/rigidbodies/RigidBodyConstraints.h
@@ -99,17 +99,17 @@ set(MODELS_RIGIDBODIES_FILES
 	src/models/rigidbodies/RigidBodyDynamics.h
 	src/models/rigidbodies/RigidBodyHandler.cpp
 	src/models/rigidbodies/RigidBodyHandler.h
-	src/models/rigidbodies/rigidbody_constraints_ui.h
-	src/models/rigidbodies/rigidbody_transformations.cpp
-	src/models/rigidbodies/rigidbody_transformations.h
+	src/models/rigidbodies/RigidBodyConstraintsUi.h
+	src/models/rigidbodies/RigidBodyTransformations.cpp
+	src/models/rigidbodies/RigidBodyTransformations.h
 	src/models/rigidbodies/RigidBodiesMeshOutput.cpp
 	src/models/rigidbodies/RigidBodiesMeshOutput.h
 )
 
 set(MODELS_INTERACTIONS_FILES
-	src/models/interactions/contact_and_friction_data.h
-	src/models/interactions/friction_geometry.cpp
-	src/models/interactions/friction_geometry.h
+	src/models/interactions/ContactAndFrictionData.h
+	src/models/interactions/FrictionGeometry.cpp
+	src/models/interactions/FrictionGeometry.h
 	src/models/interactions/EnergyFrictionalContact.cpp
 	src/models/interactions/EnergyFrictionalContact.h
 	src/models/interactions/EnergyAttachments.cpp
@@ -123,8 +123,8 @@ set(MODELS_PRESETS_FILES
 	src/models/presets/Presets.h
 	src/models/presets/DeformablesPresets.cpp
 	src/models/presets/DeformablesPresets.h
-	src/models/presets/deformables_preset_types.cpp
-	src/models/presets/deformables_preset_types.h
+	src/models/presets/DeformablesPresetTypes.cpp
+	src/models/presets/DeformablesPresetTypes.h
 	src/models/presets/RigidBodyPresets.cpp
 	src/models/presets/RigidBodyPresets.h
 )
@@ -137,26 +137,26 @@ set(MODELS_FILES
 
 	src/models/include.h
 	src/models/types.h
-	src/models/distances.cpp
-	src/models/distances.h
+	src/models/Distances.cpp
+	src/models/Distances.h
 	src/models/IntervalVector.h
 	src/models/MeshOutputGroups.cpp
 	src/models/MeshOutputGroups.h
 	src/models/Simulation.cpp
 	src/models/Simulation.h
-	src/models/time_integration.cpp
-	src/models/time_integration.h
+	src/models/TimeIntegration.cpp
+	src/models/TimeIntegration.h
 	)
 
 set(UTILS_FILES
 	src/utils/Mesh.h
-	src/utils/mesh_utils.h
-	src/utils/mesh_utils.cpp
-	src/utils/mesh_generators.cpp
-	src/utils/mesh_generators.h
+	src/utils/MeshUtils.h
+	src/utils/MeshUtils.cpp
+	src/utils/MeshGenerators.cpp
+	src/utils/MeshGenerators.h
 	src/utils/unordered_array_set_and_map.h
-	src/utils/blends.cpp
-	src/utils/blends.h
+	src/utils/Blends.cpp
+	src/utils/Blends.h
 	src/utils/include.h
 	)
 

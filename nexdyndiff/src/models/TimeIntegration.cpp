@@ -1,4 +1,4 @@
-#include "time_integration.h"
+#include "TimeIntegration.h"
 
 symx::Vector nexdyndiff::time_integration(const symx::Vector& x0, const symx::Vector& v1, const symx::Scalar& dt)
 {

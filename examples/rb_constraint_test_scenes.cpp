@@ -1,7 +1,7 @@
 #include "rb_constraint_test_scenes.h"
 #include <functional>
 
-#include <nexdyndiff>
+#include "nexdyndiff.h"
 #include "paths.h"
 
 nexdyndiff::RigidBodyHandler make_box(nexdyndiff::Simulation& simulation)

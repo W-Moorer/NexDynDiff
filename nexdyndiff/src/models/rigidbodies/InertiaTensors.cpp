@@ -1,4 +1,4 @@
-#include "inertia_tensors.h"
+#include "InertiaTensors.h"
 
 Eigen::Matrix3d nexdyndiff::inertia_tensor_sphere(double mass, double radius)
 {

@@ -1,7 +1,7 @@
 #include "EnergyTetStrain.h"
 
-#include "../deformable_tools.h"
-#include "../../time_integration.h"
+#include "../DeformableTools.h"
+#include "../../TimeIntegration.h"
 #include "../../../utils/include.h"
 
 

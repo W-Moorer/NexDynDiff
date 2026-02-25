@@ -1,4 +1,4 @@
-#include "friction_geometry.h"
+#include "FrictionGeometry.h"
 
 // Ericson05
 std::array<double, 3> nexdyndiff::barycentric_point_triangle(const Eigen::Vector3d& p, const Eigen::Vector3d& a, const Eigen::Vector3d& b, const Eigen::Vector3d& c)

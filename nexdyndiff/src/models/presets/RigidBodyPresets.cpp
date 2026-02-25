@@ -1,7 +1,7 @@
 #include "RigidBodyPresets.h"
 
-#include "../../utils/mesh_generators.h"
-#include "../rigidbodies/inertia_tensors.h"
+#include "../../utils/MeshGenerators.h"
+#include "../rigidbodies/InertiaTensors.h"
 
 
 nexdyndiff::RigidBodyPresets::RigidBodyPresets(core::NexDynDiff& nexdyndiff, std::shared_ptr<RigidBodies> rigidbodies, std::shared_ptr<Interactions> interactions)

@@ -1,7 +1,7 @@
 #include "RigidBodyHandler.h"
 
 #include "RigidBodyDynamics.h"
-#include "rigidbody_transformations.h"
+#include "RigidBodyTransformations.h"
 #include "../../utils/include.h"
 
 nexdyndiff::RigidBodyHandler::RigidBodyHandler(RigidBodyDynamics* rb, EnergyRigidBodyInertia* inertia, int idx)

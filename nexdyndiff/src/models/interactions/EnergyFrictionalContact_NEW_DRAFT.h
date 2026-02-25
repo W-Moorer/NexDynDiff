@@ -4,7 +4,7 @@
 #include "../../utils/unordered_array_set_and_map.h"
 #include "../deformables/PointDynamics.h"
 #include "../rigidbodies/RigidBodyHandler.h"
-#include "contact_and_friction_data.h"
+#include "ContactAndFrictionData.h"
 
 
 namespace nexdyndiff

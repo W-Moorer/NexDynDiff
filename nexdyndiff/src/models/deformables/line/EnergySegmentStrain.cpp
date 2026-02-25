@@ -1,6 +1,6 @@
 #include "EnergySegmentStrain.h"
 
-#include "../../time_integration.h"
+#include "../../TimeIntegration.h"
 #include "../../../utils/include.h"
 
 nexdyndiff::EnergySegmentStrain::EnergySegmentStrain(nexdyndiff::core::NexDynDiff& nexdyndiff, spPointDynamics dyn)

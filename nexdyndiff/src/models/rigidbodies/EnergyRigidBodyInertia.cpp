@@ -1,6 +1,6 @@
 #include "EnergyRigidBodyInertia.h"
 
-#include "rigidbody_transformations.h"
+#include "RigidBodyTransformations.h"
 
 nexdyndiff::EnergyRigidBodyInertia::EnergyRigidBodyInertia(core::NexDynDiff& nexdyndiff, spRigidBodyDynamics rb)
 	: rb(rb)

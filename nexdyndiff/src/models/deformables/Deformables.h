@@ -1,6 +1,6 @@
 #pragma once
 #include "DeformablesMeshOutput.h"
-#include "deformables_energies_include.h"
+#include "DeformablesEnergiesInclude.h"
 
 namespace nexdyndiff
 {

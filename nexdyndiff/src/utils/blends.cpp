@@ -1,4 +1,4 @@
-#include "blends.h"
+#include "Blends.h"
 
 #include <cmath>
 

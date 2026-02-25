@@ -1,10 +1,10 @@
 #include "EnergyFrictionalContact.h"
 
-#include "../time_integration.h"
-#include "../distances.h"
-#include "../rigidbodies/rigidbody_transformations.h"
-#include "../../utils/mesh_utils.h"
-#include "friction_geometry.h"
+#include "../TimeIntegration.h"
+#include "../Distances.h"
+#include "../rigidbodies/RigidBodyTransformations.h"
+#include "../../utils/MeshUtils.h"
+#include "FrictionGeometry.h"
 
 
 nexdyndiff::EnergyFrictionalContact::EnergyFrictionalContact(core::NexDynDiff& nexdyndiff, const spPointDynamics dyn, const spRigidBodyDynamics rb)

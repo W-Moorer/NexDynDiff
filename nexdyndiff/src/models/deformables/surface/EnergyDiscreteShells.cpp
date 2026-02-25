@@ -1,6 +1,6 @@
 #include "EnergyDiscreteShells.h"
 
-#include "../../time_integration.h"
+#include "../../TimeIntegration.h"
 #include "../../../utils/include.h"
 
 constexpr double EPSILON = 1e-12;

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <nexdyndiff>
+#include "nexdyndiff.h"
 #include "paths.h"
 #include "rb_constraint_test_scenes.h"  // Contains a bunch of simple rigid body scenes with predictable outcomes
 

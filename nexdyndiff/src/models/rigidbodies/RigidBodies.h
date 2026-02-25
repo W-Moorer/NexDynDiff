@@ -3,8 +3,8 @@
 #include "RigidBodyDynamics.h"
 #include "RigidBodyHandler.h"
 #include "RigidBodiesMeshOutput.h"
-#include "rigidbody_constraints_ui.h"
-#include "inertia_tensors.h"  // make them public
+#include "RigidBodyConstraintsUi.h"
+#include "InertiaTensors.h"  // make them public
 
 #include "EnergyRigidBodyInertia.h"
 #include "EnergyRigidBodyConstraints.h"

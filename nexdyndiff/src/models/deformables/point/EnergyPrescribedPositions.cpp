@@ -1,6 +1,6 @@
 #include "EnergyPrescribedPositions.h"
 
-#include "../../time_integration.h"
+#include "../../TimeIntegration.h"
 #include "../../../utils/include.h"
 
 

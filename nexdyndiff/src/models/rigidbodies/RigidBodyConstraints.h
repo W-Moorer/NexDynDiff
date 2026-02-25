@@ -9,7 +9,7 @@
 #include <symx>
 
 #include "../../utils/include.h"
-#include "../distances.h"
+#include "../Distances.h"
 
 namespace nexdyndiff
 {

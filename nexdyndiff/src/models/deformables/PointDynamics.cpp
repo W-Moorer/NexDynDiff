@@ -1,6 +1,6 @@
 #include "PointDynamics.h"
 
-#include "../time_integration.h"
+#include "../TimeIntegration.h"
 
 nexdyndiff::PointDynamics::PointDynamics(nexdyndiff::core::NexDynDiff& nexdyndiff)
 {

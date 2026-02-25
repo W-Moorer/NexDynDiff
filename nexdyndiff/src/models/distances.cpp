@@ -1,4 +1,4 @@
-#include "distances.h"
+#include "Distances.h"
 
 double nexdyndiff::sq_distance_point_point(const Eigen::Vector3d& p, const Eigen::Vector3d& q)
 {

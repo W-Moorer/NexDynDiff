@@ -27,7 +27,12 @@ add_executable(examples ${SOURCE_FILES})
 # Include/link dependencies
 ## NexDynDiff
 target_link_libraries(examples nexdyndiff)
-target_include_directories(examples PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../nexdyndiff/include)
+target_include_directories(examples PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../nexdyndiff/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../nexdyndiff/src/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/../nexdyndiff/src/models
+    ${CMAKE_CURRENT_SOURCE_DIR}/../nexdyndiff/src/utils
+)
 
 ## Eigen
 target_include_directories(examples PUBLIC ${EIGEN3_INCLUDE_DIR})

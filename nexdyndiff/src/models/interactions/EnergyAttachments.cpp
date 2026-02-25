@@ -1,8 +1,8 @@
 #include "EnergyAttachments.h"
 
 #include "../../utils/include.h"
-#include "../time_integration.h"
-#include "../rigidbodies/rigidbody_transformations.h"
+#include "../TimeIntegration.h"
+#include "../rigidbodies/RigidBodyTransformations.h"
 #include <tmd/TriangleMeshDistance.h>
 
 

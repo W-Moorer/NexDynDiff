@@ -2,7 +2,7 @@
 
 #include <fmt/format.h>
 
-#include "rigidbody_transformations.h"
+#include "RigidBodyTransformations.h"
 
 nexdyndiff::EnergyRigidBodyConstraints::EnergyRigidBodyConstraints(nexdyndiff::core::NexDynDiff& nexdyndiff, spRigidBodyDynamics rb)
 	: rb(rb)

@@ -2,7 +2,7 @@
 
 #include "../../utils/include.h"
 
-#include "rigidbody_transformations.h"
+#include "RigidBodyTransformations.h"
 #include "RigidBodyConstraints.h"
 #include "RigidBodyHandler.h"
 
