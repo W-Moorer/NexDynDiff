@@ -160,11 +160,26 @@ set(UTILS_FILES
 	src/utils/include.h
 	)
 
+set(SCENE_FILES
+	src/scene/Include.h
+	src/scene/SceneDescription.h
+	src/scene/SceneParser.h
+	src/scene/SceneParser.cpp
+	src/scene/SceneCache.h
+	src/scene/SceneCache.cpp
+	src/scene/SceneBuilder.h
+	src/scene/SceneBuilder.cpp
+	src/scene/SceneLoader.h
+	src/scene/SceneLoader.cpp
+	src/scene/SceneMiniParsers.h
+	)
+
 set(ALL_FILES
 	include/nexdyndiff.h
 	${CORE_FILES} 
 	${MODELS_FILES} 
 	${UTILS_FILES}
+	${SCENE_FILES}
 )
 
 # Create library
