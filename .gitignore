@@ -4,6 +4,8 @@
 build/
 codegen/
 output/
+temps/
+documents/local/
 .vscode/
 CMakeFiles/
 CMakeCache.txt

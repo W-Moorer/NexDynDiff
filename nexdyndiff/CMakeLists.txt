@@ -41,7 +41,7 @@ set(CORE_FILES
 	src/core/Callbacks.h
 	src/core/Console.cpp
 	src/core/Console.h
-	src/core/include_ui.h
+	src/core/include_api.h
 	src/core/Logger.cpp
 	src/core/Logger.h
 	src/core/NewtonsMethod.cpp
@@ -161,7 +161,7 @@ set(UTILS_FILES
 	)
 
 set(ALL_FILES
-	include/nexdyndiff
+	include/nexdyndiff.h
 	${CORE_FILES} 
 	${MODELS_FILES} 
 	${UTILS_FILES}
