@@ -391,15 +391,130 @@ nexdyndiff::scene::BuildResult nexdyndiff::scene::SceneBuilder::Build(Simulation
 			}
 		}
 		else if (type == "rigidbody_constraint") {
-			auto it = result.rigid_bodies.find(bc.target);
-			if (it == result.rigid_bodies.end()) {
-				AddError(result, "boundary_conditions", "Unknown rigidbody_constraint target: " + bc.target);
-				continue;
-			}
-
 			const std::string constraint_type = bc.constraint_type.empty() ? "fix" : ToLower(bc.constraint_type);
+
+			auto it_target = result.rigid_bodies.find(bc.target);
+			auto it_body_a = result.rigid_bodies.find(bc.body_a);
+			auto it_body_b = result.rigid_bodies.find(bc.body_b);
+
 			if (constraint_type == "fix") {
-				simulation.rigidbodies->add_constraint_fix(it->second);
+				if (it_target == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown rigidbody_constraint target: " + bc.target);
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_fix(it_target->second);
+			}
+			else if (constraint_type == "point") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for point constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_point(it_body_a->second, it_body_b->second, bc.pivot);
+			}
+			else if (constraint_type == "point_on_axis") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for point_on_axis constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_point_on_axis(it_body_a->second, it_body_b->second, bc.pivot, bc.axis);
+			}
+			else if (constraint_type == "direction") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for direction constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_direction(it_body_a->second, it_body_b->second, bc.axis);
+			}
+			else if (constraint_type == "distance") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for distance constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_distance(it_body_a->second, it_body_b->second, bc.pivot, bc.pivot + bc.axis * bc.target_distance);
+			}
+			else if (constraint_type == "distance_limits") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for distance_limits constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_distance_limits(it_body_a->second, it_body_b->second, bc.pivot, bc.pivot + bc.axis, bc.min_limit, bc.max_limit);
+			}
+			else if (constraint_type == "angle_limit") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for angle_limit constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_angle_limit(it_body_a->second, it_body_b->second, bc.axis, bc.admissible_angle_deg);
+			}
+			else if (constraint_type == "spring") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for spring constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_spring(it_body_a->second, it_body_b->second, bc.pivot, bc.pivot + bc.axis, bc.stiffness, bc.damping);
+			}
+			else if (constraint_type == "attachment") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for attachment constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_attachment(it_body_a->second, it_body_b->second);
+			}
+			else if (constraint_type == "point_with_angle_limit") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for point_with_angle_limit constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_point_with_angle_limit(it_body_a->second, it_body_b->second, bc.pivot, bc.axis, bc.admissible_angle_deg);
+			}
+			else if (constraint_type == "hinge") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for hinge constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_hinge(it_body_a->second, it_body_b->second, bc.pivot, bc.axis);
+			}
+			else if (constraint_type == "hinge_with_limits") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for hinge_with_limits constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_hinge_with_angle_limit(it_body_a->second, it_body_b->second, bc.pivot, bc.axis, bc.admissible_angle_deg);
+			}
+			else if (constraint_type == "spring_with_limits") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for spring_with_limits constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_spring_with_limits(it_body_a->second, it_body_b->second, bc.pivot, bc.pivot + bc.axis, bc.stiffness, bc.min_limit, bc.max_limit, bc.damping);
+			}
+			else if (constraint_type == "slider") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for slider constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_slider(it_body_a->second, it_body_b->second, bc.pivot, bc.axis);
+			}
+			else if (constraint_type == "prismatic_slider") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for prismatic_slider constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_prismatic_slider(it_body_a->second, it_body_b->second, bc.pivot, bc.axis);
+			}
+			else if (constraint_type == "prismatic_press") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for prismatic_press constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_prismatic_press(it_body_a->second, it_body_b->second, bc.pivot, bc.axis, bc.target_velocity, bc.max_force);
+			}
+			else if (constraint_type == "motor") {
+				if (it_body_a == result.rigid_bodies.end() || it_body_b == result.rigid_bodies.end()) {
+					AddError(result, "boundary_conditions", "Unknown body_a or body_b for motor constraint");
+					continue;
+				}
+				simulation.rigidbodies->add_constraint_motor(it_body_a->second, it_body_b->second, bc.pivot, bc.axis, bc.target_velocity, bc.max_force);
 			}
 			else {
 				AddError(result, "boundary_conditions", "Unsupported rigidbody constraint type: " + bc.constraint_type);

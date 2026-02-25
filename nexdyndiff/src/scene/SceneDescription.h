@@ -110,6 +110,18 @@ namespace nexdyndiff::scene
 		SelectorDefinition selector;
 		double stiffness = 1e7;
 		double tolerance = 1e-3;
+
+		std::string body_a;
+		std::string body_b;
+		Eigen::Vector3d pivot = Eigen::Vector3d::Zero();
+		Eigen::Vector3d axis = Eigen::Vector3d::UnitY();
+		double target_distance = 0.0;
+		double min_limit = 0.0;
+		double max_limit = 0.0;
+		double damping = 0.0;
+		double target_velocity = 0.0;
+		double max_force = 0.0;
+		double admissible_angle_deg = 0.0;
 	};
 
 	struct ScriptedEventActionDefinition
