@@ -1,0 +1,212 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "cmame_case_D_rigid_flexible_contact"
+  },
+  "settings": {
+    "output": {
+      "simulation_name": "cmame_case_D_rigid_flexible_contact",
+      "output_directory": "./output/cmame_case_D_rigid_flexible_contact",
+      "codegen_directory": "./codegen/cmame_case_D_rigid_flexible_contact",
+      "enable_output": false
+    },
+    "simulation": {
+      "gravity": [
+        0.0,
+        -9.81,
+        0.0
+      ],
+      "max_time_step_size": 0.0005,
+      "use_adaptive_time_step": true,
+      "init_frictional_contact": true
+    },
+    "newton": {
+      "residual_type": "Force",
+      "residual_tolerance": 1.0e-08,
+      "linear_system_solver": "DirectLU",
+      "max_newton_iterations": 100,
+      "project_to_PD": true
+    },
+    "execution": {
+      "end_simulation_time": 1.5,
+      "n_threads": -1
+    }
+  },
+  "materials": {
+    "soft_block": {
+      "type": "volume",
+      "density": 1100.0,
+      "youngs_modulus": 70000.0,
+      "poisson_ratio": 0.45,
+      "damping": 0.05,
+      "elasticity_only": false,
+      "contact_thickness": 0.0025
+    }
+  },
+  "objects": {
+    "deformables": [
+      {
+        "id": "Block",
+        "type": "volume",
+        "label": "Block",
+        "material": "soft_block",
+        "geometry": {
+          "type": "grid",
+          "size": [
+            0.24,
+            0.24,
+            0.24
+          ],
+          "subdivisions": [
+            5,
+            5,
+            5
+          ]
+        },
+        "transform": {
+          "translation": [
+            0.0,
+            0.14,
+            0.0
+          ]
+        },
+        "contact": {
+          "enabled": true,
+          "thickness": 0.0025
+        }
+      }
+    ],
+    "rigidbodies": [
+      {
+        "id": "Ground",
+        "label": "Ground",
+        "geometry": {
+          "type": "box",
+          "size": [
+            1.5,
+            0.04,
+            1.0
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "fixed": true,
+        "transform": {
+          "translation": [
+            0.0,
+            -0.02,
+            0.0
+          ]
+        },
+        "contact": {
+          "thickness": 0.0025
+        }
+      },
+      {
+        "id": "Pusher",
+        "label": "Pusher",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.08,
+            0.24,
+            0.24
+          ]
+        },
+        "mass": 2.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "transform": {
+          "translation": [
+            -0.32,
+            0.14,
+            0.0
+          ]
+        },
+        "contact": {
+          "thickness": 0.0025
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "id": "FixGround",
+      "type": "rigidbody_constraint",
+      "constraint_type": "fix",
+      "target": "Ground"
+    },
+    {
+      "id": "PusherGuide",
+      "type": "rigidbody_constraint",
+      "constraint_type": "prismatic_slider",
+      "body_a": "Ground",
+      "body_b": "Pusher",
+      "pivot": [
+        0.0,
+        0.14,
+        0.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": "PusherDrive",
+      "type": "rigidbody_constraint",
+      "constraint_type": "prismatic_press",
+      "body_a": "Ground",
+      "body_b": "Pusher",
+      "pivot": [
+        0.0,
+        0.14,
+        0.0
+      ],
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "params": {
+        "target_velocity": 0.6,
+        "max_force": 180.0
+      }
+    }
+  ],
+  "interactions": {
+    "contact": {
+      "global_params": {
+        "default_contact_thickness": 0.0025,
+        "friction_stick_slide_threshold": 0.01,
+        "min_contact_stiffness": 50000000.0
+      },
+      "pairs": [
+        {
+          "object1": "Pusher",
+          "object2": "Block",
+          "friction": 0.4
+        },
+        {
+          "object1": "Ground",
+          "object2": "Block",
+          "friction": 0.6
+        }
+      ],
+      "disabled_pairs": [
+        [
+          "Ground",
+          "Pusher"
+        ]
+      ]
+    }
+  }
+}

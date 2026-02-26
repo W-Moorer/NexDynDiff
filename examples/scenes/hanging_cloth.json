@@ -1,0 +1,93 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "hanging_cloth",
+    "description": "A simple cloth fixed by two corners hanging due to gravity"
+  },
+  "settings": {
+    "output": {
+      "simulation_name": "hanging_cloth",
+      "output_directory": "./output/hanging_cloth",
+      "codegen_directory": "./codegen/hanging_cloth",
+      "fps": 30,
+      "enable_output": true
+    },
+    "simulation": {
+      "gravity": [0.0, 0.0, -9.81],
+      "max_time_step_size": 0.01,
+      "use_adaptive_time_step": true,
+      "init_frictional_contact": false
+    },
+    "newton": {
+      "residual_type": "Acceleration",
+      "residual_tolerance": 1.0,
+      "linear_system_solver": "CG",
+      "max_newton_iterations": 100,
+      "project_to_PD": true
+    },
+    "execution": {
+      "end_simulation_time": 5.0,
+      "n_threads": -1
+    }
+  },
+  "materials": {
+    "cotton_fabric": {
+      "type": "surface",
+      "density": 1000.0,
+      "youngs_modulus": 5000.0,
+      "poisson_ratio": 0.3,
+      "damping": 0.5,
+      "bending_stiffness": 0.001,
+      "strain_limit": 0.2
+    }
+  },
+  "objects": {
+    "deformables": [
+      {
+        "id": "cloth",
+        "type": "surface",
+        "label": "cloth",
+        "geometry": {
+          "type": "grid",
+          "size": [1.0, 1.0],
+          "subdivisions": [20, 20]
+        },
+        "material": "cotton_fabric",
+        "transform": {
+          "translation": [0.0, 0.0, 0.0],
+          "rotation": [0.0, 0.0, 0.0]
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "id": "bc_left",
+      "type": "prescribed_position",
+      "target": "cloth",
+      "selector": {
+        "type": "inside_aabb",
+        "center": [0.5, 0.5, 0.0],
+        "halfsize": [0.001, 0.001, 0.001]
+      },
+      "params": {
+        "stiffness": 10000000.0,
+        "tolerance": 0.001
+      }
+    },
+    {
+      "id": "bc_right",
+      "type": "prescribed_position",
+      "target": "cloth",
+      "selector": {
+        "type": "inside_aabb",
+        "center": [-0.5, 0.5, 0.0],
+        "halfsize": [0.001, 0.001, 0.001]
+      },
+      "params": {
+        "stiffness": 10000000.0,
+        "tolerance": 0.001
+      }
+    }
+  ]
+}

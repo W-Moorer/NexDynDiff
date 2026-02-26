@@ -1,0 +1,193 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "cmame_case_A_multibody_accuracy"
+  },
+  "settings": {
+    "output": {
+      "simulation_name": "cmame_case_A_multibody_accuracy",
+      "output_directory": "./output/cmame_case_A_multibody_accuracy",
+      "codegen_directory": "./codegen/cmame_case_A_multibody_accuracy",
+      "enable_output": false
+    },
+    "simulation": {
+      "gravity": [
+        0.0,
+        -9.81,
+        0.0
+      ],
+      "max_time_step_size": 0.0005,
+      "use_adaptive_time_step": true,
+      "init_frictional_contact": false
+    },
+    "newton": {
+      "residual_type": "Force",
+      "residual_tolerance": 1.0e-08,
+      "linear_system_solver": "DirectLU",
+      "max_newton_iterations": 100,
+      "project_to_PD": true
+    },
+    "execution": {
+      "end_simulation_time": 3.0,
+      "n_threads": -1
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "Ground",
+        "label": "Ground",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.2,
+            0.2,
+            0.2
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "fixed": true,
+        "transform": {
+          "translation": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "Link1",
+        "label": "Link1",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.6,
+            0.05,
+            0.05
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "transform": {
+          "translation": [
+            0.3,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "Link2",
+        "label": "Link2",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.6,
+            0.05,
+            0.05
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "transform": {
+          "translation": [
+            0.9,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "Link3",
+        "label": "Link3",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.6,
+            0.05,
+            0.05
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "transform": {
+          "translation": [
+            1.5,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "id": "Joint1",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Ground",
+      "body_b": "Link1",
+      "pivot": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "id": "Joint2",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Link1",
+      "body_b": "Link2",
+      "pivot": [
+        0.6,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "id": "Joint3",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Link2",
+      "body_b": "Link3",
+      "pivot": [
+        1.2,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ]
+}

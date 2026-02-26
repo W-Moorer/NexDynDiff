@@ -12,7 +12,7 @@
     },
     "simulation": {
       "gravity": [0.0, -9.81, 0.0],
-      "max_time_step_size": 0.001,
+      "max_time_step_size": 0.0005,
       "use_adaptive_time_step": true,
       "init_frictional_contact": false
     },

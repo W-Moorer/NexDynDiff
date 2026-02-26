@@ -1,0 +1,239 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "cmame_case_C_multiconstraint_contact"
+  },
+  "settings": {
+    "output": {
+      "simulation_name": "cmame_case_C_multiconstraint_contact",
+      "output_directory": "./output/cmame_case_C_multiconstraint_contact",
+      "codegen_directory": "./codegen/cmame_case_C_multiconstraint_contact",
+      "enable_output": false
+    },
+    "simulation": {
+      "gravity": [
+        0.0,
+        -9.81,
+        0.0
+      ],
+      "max_time_step_size": 0.0005,
+      "use_adaptive_time_step": true,
+      "init_frictional_contact": true
+    },
+    "newton": {
+      "residual_type": "Force",
+      "residual_tolerance": 1.0e-08,
+      "linear_system_solver": "DirectLU",
+      "max_newton_iterations": 100,
+      "project_to_PD": true
+    },
+    "execution": {
+      "end_simulation_time": 2.0,
+      "n_threads": -1
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "Ground",
+        "label": "Ground",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.2,
+            0.2,
+            0.2
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "fixed": true
+      },
+      {
+        "id": "Floor",
+        "label": "Floor",
+        "geometry": {
+          "type": "box",
+          "size": [
+            3.0,
+            0.08,
+            1.0
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "fixed": true,
+        "transform": {
+          "translation": [
+            0.8,
+            -0.45,
+            0.0
+          ]
+        },
+        "contact": {
+          "thickness": 0.003
+        }
+      },
+      {
+        "id": "Crank",
+        "label": "Crank",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.6,
+            0.08,
+            0.08
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "transform": {
+          "translation": [
+            0.3,
+            0.0,
+            0.0
+          ]
+        },
+        "contact": {
+          "thickness": 0.003
+        }
+      },
+      {
+        "id": "Coupler",
+        "label": "Coupler",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.8,
+            0.08,
+            0.08
+          ]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "transform": {
+          "translation": [
+            0.95,
+            -0.15,
+            0.0
+          ]
+        },
+        "contact": {
+          "thickness": 0.003
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "id": "FixGround",
+      "type": "rigidbody_constraint",
+      "constraint_type": "fix",
+      "target": "Ground"
+    },
+    {
+      "id": "FixFloor",
+      "type": "rigidbody_constraint",
+      "constraint_type": "fix",
+      "target": "Floor"
+    },
+    {
+      "id": "JointGroundCrank",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Ground",
+      "body_b": "Crank",
+      "pivot": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "id": "JointCrankCoupler",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Crank",
+      "body_b": "Coupler",
+      "pivot": [
+        0.6,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "id": "CrankMotor",
+      "type": "rigidbody_constraint",
+      "constraint_type": "motor",
+      "body_a": "Ground",
+      "body_b": "Crank",
+      "pivot": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "params": {
+        "target_velocity": -4.0,
+        "max_force": 120.0
+      }
+    }
+  ],
+  "interactions": {
+    "contact": {
+      "global_params": {
+        "default_contact_thickness": 0.003,
+        "friction_stick_slide_threshold": 0.01,
+        "min_contact_stiffness": 100000000.0
+      },
+      "pairs": [
+        {
+          "object1": "Coupler",
+          "object2": "Floor",
+          "friction": 0.6
+        },
+        {
+          "object1": "Crank",
+          "object2": "Floor",
+          "friction": 0.4
+        }
+      ],
+      "disabled_pairs": [
+        [
+          "Ground",
+          "Floor"
+        ]
+      ]
+    }
+  }
+}
