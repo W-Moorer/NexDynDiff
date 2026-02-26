@@ -102,12 +102,51 @@ namespace nexdyndiff::scene
             return result;
         }
 
+        std::unique_ptr<SceneCsvExporter> csv_exporter;
+        if (options.export_csv && !load_result.build_result.rigid_bodies.empty()) {
+            CsvExportOptions csv_options;
+            csv_options.enabled = true;
+            csv_options.fps = options.csv_fps;
+
+            csv_exporter = std::make_unique<SceneCsvExporter>(
+                load_result.parse_result.description,
+                load_result.build_result.rigid_bodies,
+                csv_options);
+
+            if (options.verbose) {
+                PrintInfo(fmt::format("CSV export enabled ({} fps)", options.csv_fps));
+            }
+        }
+
         if (options.verbose) {
             PrintInfo("Starting simulation...");
             fmt::print("\n");
         }
 
-        load_result.simulation->run();
+        const double end_time = load_result.parse_result.description.settings.execution.end_simulation_time;
+        const double fps = options.export_csv ? (double)options.csv_fps : 30.0;
+        const double frame_time = 1.0 / fps;
+        double next_sample_time = 0.0;
+
+        if (csv_exporter) {
+            csv_exporter->sample(load_result.simulation->get_time());
+        }
+
+        while (load_result.simulation->get_time() < end_time - 1e-12) {
+            load_result.simulation->run_one_time_step();
+
+            if (csv_exporter && load_result.simulation->get_time() >= next_sample_time - 1e-12) {
+                csv_exporter->sample(load_result.simulation->get_time());
+                next_sample_time += frame_time;
+            }
+        }
+
+        if (csv_exporter) {
+            csv_exporter->write_to_disk();
+            if (options.verbose) {
+                PrintInfo("CSV export completed");
+            }
+        }
 
         if (options.verbose) {
             fmt::print("\n");

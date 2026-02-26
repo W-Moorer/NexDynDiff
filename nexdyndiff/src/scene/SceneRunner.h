@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "SceneLoader.h"
+#include "SceneCsvExporter.h"
 
 namespace nexdyndiff::scene
 {
@@ -14,6 +15,8 @@ namespace nexdyndiff::scene
         bool use_cache = true;
         bool validate = true;
         bool verbose = true;
+        bool export_csv = true;
+        int csv_fps = 60;
         std::filesystem::path base_path;
     };
 

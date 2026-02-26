@@ -175,6 +175,8 @@ set(SCENE_FILES
 	src/scene/SceneLoader.cpp
 	src/scene/SceneRunner.h
 	src/scene/SceneRunner.cpp
+	src/scene/SceneCsvExporter.h
+	src/scene/SceneCsvExporter.cpp
 	src/scene/SceneMiniParsers.h
 	)
 

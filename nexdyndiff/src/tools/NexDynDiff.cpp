@@ -10,11 +10,14 @@ void PrintUsage(const char* program_name)
     std::cout << "Options:\n";
     std::cout << "  --no-cache             Disable scene caching\n";
     std::cout << "  --no-validation        Disable scene validation\n";
+    std::cout << "  --no-csv               Disable CSV export\n";
+    std::cout << "  --csv-fps <N>          CSV export FPS (default: 60)\n";
     std::cout << "  --quiet                Suppress verbose output\n";
     std::cout << "  -h, --help             Show this help message\n";
     std::cout << "\nExamples:\n";
     std::cout << "  " << program_name << " scenes/hanging_cloth.json\n";
     std::cout << "  " << program_name << " scenes/my_scene.xml --no-cache\n";
+    std::cout << "  " << program_name << " scenes/my_scene.xml --csv-fps 30\n";
 }
 
 int main(int argc, char* argv[])
@@ -40,6 +43,12 @@ int main(int argc, char* argv[])
         }
         else if (arg == "--no-validation") {
             options.validate = false;
+        }
+        else if (arg == "--no-csv") {
+            options.export_csv = false;
+        }
+        else if (arg == "--csv-fps" && i + 1 < argc) {
+            options.csv_fps = std::stoi(argv[++i]);
         }
         else if (arg == "--quiet") {
             options.verbose = false;
