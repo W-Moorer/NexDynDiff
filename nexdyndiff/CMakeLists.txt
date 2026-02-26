@@ -31,10 +31,11 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	add_compile_options("-march=native")
 endif()
 
-# Dependencies
+# Add subdirectories
 add_subdirectory(extern/symx)
 add_subdirectory(extern/TriangleMeshCollisionDetection)
 add_subdirectory(extern/fmt)
+add_subdirectory(src/tools)
 
 # Source files
 set(CORE_FILES
@@ -172,6 +173,8 @@ set(SCENE_FILES
 	src/scene/SceneBuilder.cpp
 	src/scene/SceneLoader.h
 	src/scene/SceneLoader.cpp
+	src/scene/SceneRunner.h
+	src/scene/SceneRunner.cpp
 	src/scene/SceneMiniParsers.h
 	)
 
@@ -185,6 +188,9 @@ set(ALL_FILES
 
 # Create library
 add_library(nexdyndiff ${ALL_FILES})
+
+# Include directories for nexdyndiff library (includes nexdyndiff.h and src/)
+target_include_directories(nexdyndiff PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Include/link dependencies
 ## OpenMP
