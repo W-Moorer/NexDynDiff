@@ -15,18 +15,16 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 set(SOURCE_FILES
-    paths.h
-    main.cpp
     rb_constraint_test_scenes.cpp
     rb_constraint_test_scenes.h
 	)
 
-# Create executable    
-add_executable(examples ${SOURCE_FILES})
+# Create library with rb_constraint baseline scenes
+add_library(examples_rb_constraints STATIC ${SOURCE_FILES})
 
 # Include/link dependencies
 ## NexDynDiff
-target_link_libraries(examples nexdyndiff)
+target_link_libraries(examples_rb_constraints nexdyndiff)
 
 ## Eigen
-target_include_directories(examples PUBLIC ${EIGEN3_INCLUDE_DIR})
+target_include_directories(examples_rb_constraints PUBLIC ${EIGEN3_INCLUDE_DIR})

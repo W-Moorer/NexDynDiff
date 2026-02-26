@@ -657,6 +657,8 @@ namespace
 					if (auto v = XAttr(&node, "body_b")) bc.body_b = *v;
 					if (auto v = XAttr(&node, "pivot")) ParseVec3String(*v, bc.pivot);
 					if (auto v = XAttr(&node, "axis")) ParseVec3String(*v, bc.axis);
+					if (auto v = XDouble(&node, "stiffness")) bc.stiffness = *v;
+					if (auto v = XDouble(&node, "tolerance")) bc.tolerance = *v;
 					if (auto v = XDouble(&node, "target_distance")) bc.target_distance = *v;
 					if (auto v = XDouble(&node, "min_limit")) bc.min_limit = *v;
 					if (auto v = XDouble(&node, "max_limit")) bc.max_limit = *v;
@@ -665,6 +667,18 @@ namespace
 					if (auto v = XDouble(&node, "max_force")) bc.max_force = *v;
 					if (auto v = XDouble(&node, "admissible_angle")) bc.admissible_angle_deg = *v;
 					if (auto v = XDouble(&node, "admissible_angle_deg")) bc.admissible_angle_deg = *v;
+					if (const XmlNode* params = node.FindChild("params"); params != nullptr) {
+						if (auto v = XDouble(params, "stiffness")) bc.stiffness = *v;
+						if (auto v = XDouble(params, "tolerance")) bc.tolerance = *v;
+						if (auto v = XDouble(params, "target_distance")) bc.target_distance = *v;
+						if (auto v = XDouble(params, "min_limit")) bc.min_limit = *v;
+						if (auto v = XDouble(params, "max_limit")) bc.max_limit = *v;
+						if (auto v = XDouble(params, "damping")) bc.damping = *v;
+						if (auto v = XDouble(params, "target_velocity")) bc.target_velocity = *v;
+						if (auto v = XDouble(params, "max_force")) bc.max_force = *v;
+						if (auto v = XDouble(params, "admissible_angle")) bc.admissible_angle_deg = *v;
+						if (auto v = XDouble(params, "admissible_angle_deg")) bc.admissible_angle_deg = *v;
+					}
 				}
 				if (bc.type == "prescribed_position") {
 					if (const XmlNode* selector = node.FindChild("selector"); selector != nullptr) {

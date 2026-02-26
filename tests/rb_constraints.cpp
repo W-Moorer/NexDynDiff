@@ -4,12 +4,11 @@
 
 #include <iostream>
 #include <random>
+#include <filesystem>
 
 #include "nexdyndiff.h"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
-
-#include "../examples/paths.h"
 
 #define ENABLE_TESTS_IN_THIS_FILE true
 
@@ -29,10 +28,11 @@ const double PERTURBATION = rng() + 10.0;  // Too small force/acceleration will 
 #if ENABLE_TESTS_IN_THIS_FILE
 nexdyndiff::Settings test_settings(std::string name)
 {
+	const std::filesystem::path repo_root = std::filesystem::path(__FILE__).parent_path().parent_path();
 	nexdyndiff::Settings settings = nexdyndiff::Settings();
 	settings.output.simulation_name = name;
-	settings.output.output_directory = OUTPUT_PATH + "/test_output";
-	settings.output.codegen_directory = COMPILE_PATH;
+	settings.output.output_directory = (repo_root / "output" / "test_output").string();
+	settings.output.codegen_directory = (repo_root / "build" / "codegen").string();
 	settings.output.console_verbosity = nexdyndiff::ConsoleVerbosity::NoOutput;
 	settings.output.enable_output = false;
 	settings.execution.end_simulation_time = 3.0;

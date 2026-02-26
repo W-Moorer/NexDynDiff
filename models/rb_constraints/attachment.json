@@ -1,0 +1,67 @@
+{
+  "version": "1.0",
+  "settings": {
+    "output": {
+      "simulation_name": "attachment",
+      "enable_output": false,
+      "output_directory": "./output/rb_constraints/attachment",
+      "codegen_directory": "./codegen/rb_constraints"
+    },
+    "simulation": {
+      "init_frictional_contact": false
+    },
+    "execution": {
+      "end_simulation_time": 5.0
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "box0",
+        "label": "box0",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0
+      },
+      {
+        "id": "box1",
+        "label": "box1",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.1,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "fix",
+      "target": "box0"
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "attachment",
+      "body_a": "box0",
+      "body_b": "box1"
+    }
+  ]
+}

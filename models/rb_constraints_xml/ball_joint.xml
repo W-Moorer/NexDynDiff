@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scene version="1.0">
+  <settings>
+    <output simulation_name="ball_joint" enable_output="false" output_directory="./output/rb_constraints/ball_joint" codegen_directory="./codegen/rb_constraints" />
+    <simulation init_frictional_contact="false" />
+    <execution end_simulation_time="5.0" />
+  </settings>
+  <objects>
+    <rigidbodies>
+      <rigidbody id="box0" label="box0" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+      </rigidbody>
+      <rigidbody id="box1" label="box1" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.10000000000000001,0,0" />
+      </rigidbody>
+      <rigidbody id="box2" label="box2" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.20000000000000001,0,0" />
+      </rigidbody>
+      <rigidbody id="box3" label="box3" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.30000000000000004,0,0" />
+      </rigidbody>
+      <rigidbody id="box4" label="box4" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.40000000000000002,0,0" />
+      </rigidbody>
+      <rigidbody id="box5" label="box5" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.5,0,0" />
+      </rigidbody>
+      <rigidbody id="box6" label="box6" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.60000000000000009,0,0" />
+      </rigidbody>
+      <rigidbody id="box7" label="box7" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.70000000000000007,0,0" />
+      </rigidbody>
+      <rigidbody id="box8" label="box8" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.80000000000000004,0,0" />
+      </rigidbody>
+      <rigidbody id="box9" label="box9" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.90000000000000002,0,0" />
+      </rigidbody>
+    </rigidbodies>
+  </objects>
+  <boundary_conditions>
+    <rigidbody_constraint type="fix" target="box0" />
+    <rigidbody_constraint type="point" body_a="box0" body_b="box1" pivot="0.050000000000000003,-0.050000000000000003,-0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box1" body_b="box2" pivot="0.15000000000000002,0.050000000000000003,0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box2" body_b="box3" pivot="0.25,-0.050000000000000003,-0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box3" body_b="box4" pivot="0.35000000000000003,0.050000000000000003,0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box4" body_b="box5" pivot="0.45000000000000001,-0.050000000000000003,-0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box5" body_b="box6" pivot="0.55000000000000004,0.050000000000000003,0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box6" body_b="box7" pivot="0.65000000000000013,-0.050000000000000003,-0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box7" body_b="box8" pivot="0.75000000000000011,0.050000000000000003,0.050000000000000003" />
+    <rigidbody_constraint type="point" body_a="box8" body_b="box9" pivot="0.85000000000000009,-0.050000000000000003,-0.050000000000000003" />
+  </boundary_conditions>
+</scene>

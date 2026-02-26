@@ -20,6 +20,7 @@ add_subdirectory(extern/Catch2)
 # Source files
 set(SOURCE_FILES
     rb_constraints.cpp
+    RbConstraintSceneBaseline.cpp
     SceneLoader.cpp
     TimeSeriesUtils.cpp
 	)

@@ -154,7 +154,7 @@ TEST_CASE("SceneParser supports JSON and XML", "[scene_loader]")
 TEST_CASE("SceneLoader builds transforms and handlers from JSON", "[scene_loader]")
 {
 	auto tmp_dir = MakeTempDir();
-	const std::filesystem::path scene_path = tmp_dir / "scene.json";
+  const std::filesystem::path scene_path = tmp_dir.path() / "scene.json";
 
 	const std::string scene = R"json(
 {
@@ -261,7 +261,7 @@ TEST_CASE("SceneLoader builds transforms and handlers from JSON", "[scene_loader
 TEST_CASE("SceneLoader fails on unknown material", "[scene_loader]")
 {
 	auto tmp_dir = MakeTempDir();
-	const std::filesystem::path scene_path = tmp_dir / "invalid.json";
+  const std::filesystem::path scene_path = tmp_dir.path() / "invalid.json";
 
 	const std::string scene = R"json(
 {
@@ -302,7 +302,7 @@ TEST_CASE("SceneLoader fails on unknown material", "[scene_loader]")
 TEST_CASE("SceneLoader applies rigid body inertia tensor override", "[scene_loader]")
 {
 	auto tmp_dir = MakeTempDir();
-	const std::filesystem::path scene_path = tmp_dir / "inertia_override.json";
+  const std::filesystem::path scene_path = tmp_dir.path() / "inertia_override.json";
 
 	const std::string scene = R"json(
 {
@@ -353,7 +353,7 @@ TEST_CASE("SceneLoader applies rigid body inertia tensor override", "[scene_load
 TEST_CASE("SceneLoader scripted events update gravity and support transform_bc", "[scene_loader]")
 {
 	auto tmp_dir = MakeTempDir();
-	const std::filesystem::path scene_path = tmp_dir / "events.json";
+  const std::filesystem::path scene_path = tmp_dir.path() / "events.json";
 
 	const std::string scene = R"json(
 {
@@ -433,8 +433,8 @@ TEST_CASE("SceneLoader scripted events update gravity and support transform_bc",
 	auto load = nexdyndiff::scene::SceneLoader::Load(scene_path);
 	REQUIRE(load.success());
 	REQUIRE(load.simulation != nullptr);
-	CHECK(load.parse_result.description.settings.output.output_directory == (tmp_dir / "output").string());
-	CHECK(load.parse_result.description.settings.output.codegen_directory == (tmp_dir / "codegen").string());
+  CHECK(load.parse_result.description.settings.output.output_directory == (tmp_dir.path() / "output").string());
+  CHECK(load.parse_result.description.settings.output.codegen_directory == (tmp_dir.path() / "codegen").string());
 
 	load.simulation->run_one_time_step();
 	const Eigen::Vector3d gravity = load.simulation->get_gravity();
@@ -446,7 +446,7 @@ TEST_CASE("SceneLoader scripted events update gravity and support transform_bc",
 TEST_CASE("SceneLoader async load and cache invalidation on file change", "[scene_loader]")
 {
 	auto tmp_dir = MakeTempDir();
-	const std::filesystem::path scene_path = tmp_dir / "cache.json";
+  const std::filesystem::path scene_path = tmp_dir.path() / "cache.json";
 
 	const std::string valid_scene = R"json(
 {
@@ -477,8 +477,8 @@ TEST_CASE("SceneLoader async load and cache invalidation on file change", "[scen
 	auto async_result = future.get();
 	REQUIRE(async_result.success());
 	CHECK(callback_called.load());
-	CHECK(async_result.parse_result.description.settings.output.output_directory == (tmp_dir / "output").string());
-	CHECK(async_result.parse_result.description.settings.output.codegen_directory == (tmp_dir / "codegen").string());
+  CHECK(async_result.parse_result.description.settings.output.output_directory == (tmp_dir.path() / "output").string());
+  CHECK(async_result.parse_result.description.settings.output.codegen_directory == (tmp_dir.path() / "codegen").string());
 
 	auto parse_result_1 = nexdyndiff::scene::SceneLoader::ParseOnly(scene_path);
 	REQUIRE(parse_result_1.success());

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scene version="1.0">
+  <settings>
+    <output simulation_name="spring" enable_output="false" output_directory="./output/rb_constraints/spring" codegen_directory="./codegen/rb_constraints" />
+    <simulation init_frictional_contact="false" />
+    <execution end_simulation_time="5.0" />
+  </settings>
+  <objects>
+    <rigidbodies>
+      <rigidbody id="box0" label="box0" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+      </rigidbody>
+      <rigidbody id="box1" label="box1" mass="1.0">
+        <geometry type="box">
+          <size x="0.1" y="0.1" z="0.1" />
+        </geometry>
+        <transform translation="0.5,0,0" />
+      </rigidbody>
+    </rigidbodies>
+  </objects>
+  <boundary_conditions>
+    <rigidbody_constraint type="fix" target="box0" />
+    <rigidbody_constraint type="spring" body_a="box0" body_b="box1" pivot="0,0,0" axis="0.45000000000000001,-0.050000000000000003,-0.050000000000000003" stiffness="5.0" damping="1.0" />
+  </boundary_conditions>
+</scene>

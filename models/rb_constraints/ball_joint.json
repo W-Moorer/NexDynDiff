@@ -1,0 +1,320 @@
+{
+  "version": "1.0",
+  "settings": {
+    "output": {
+      "simulation_name": "ball_joint",
+      "enable_output": false,
+      "output_directory": "./output/rb_constraints/ball_joint",
+      "codegen_directory": "./codegen/rb_constraints"
+    },
+    "simulation": {
+      "init_frictional_contact": false
+    },
+    "execution": {
+      "end_simulation_time": 5.0
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "box0",
+        "label": "box0",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0
+      },
+      {
+        "id": "box1",
+        "label": "box1",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.1,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box2",
+        "label": "box2",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.2,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box3",
+        "label": "box3",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.30000000000000004,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box4",
+        "label": "box4",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.4,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box5",
+        "label": "box5",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.5,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box6",
+        "label": "box6",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.6000000000000001,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box7",
+        "label": "box7",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.7000000000000001,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box8",
+        "label": "box8",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.8,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "box9",
+        "label": "box9",
+        "geometry": {
+          "type": "box",
+          "size": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        "mass": 1.0,
+        "transform": {
+          "translation": [
+            0.9,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "fix",
+      "target": "box0"
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box0",
+      "body_b": "box1",
+      "pivot": [
+        0.05,
+        -0.05,
+        -0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box1",
+      "body_b": "box2",
+      "pivot": [
+        0.15000000000000002,
+        0.05,
+        0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box2",
+      "body_b": "box3",
+      "pivot": [
+        0.25,
+        -0.05,
+        -0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box3",
+      "body_b": "box4",
+      "pivot": [
+        0.35000000000000003,
+        0.05,
+        0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box4",
+      "body_b": "box5",
+      "pivot": [
+        0.45,
+        -0.05,
+        -0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box5",
+      "body_b": "box6",
+      "pivot": [
+        0.55,
+        0.05,
+        0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box6",
+      "body_b": "box7",
+      "pivot": [
+        0.6500000000000001,
+        -0.05,
+        -0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box7",
+      "body_b": "box8",
+      "pivot": [
+        0.7500000000000001,
+        0.05,
+        0.05
+      ]
+    },
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "point",
+      "body_a": "box8",
+      "body_b": "box9",
+      "pivot": [
+        0.8500000000000001,
+        -0.05,
+        -0.05
+      ]
+    }
+  ]
+}
