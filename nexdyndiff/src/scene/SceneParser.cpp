@@ -95,6 +95,40 @@ namespace
 		return true;
 	}
 
+	bool JMat3(const JsonValue* value, Eigen::Matrix3d& out)
+	{
+		if (value == nullptr || !value->IsArray()) return false;
+
+		if (value->a.size() == 9) {
+			std::array<double, 9> m = {};
+			for (int i = 0; i < 9; ++i) {
+				auto v = JDouble(&value->a[(size_t)i]);
+				if (!v.has_value()) return false;
+				m[(size_t)i] = *v;
+			}
+			out <<
+				m[0], m[1], m[2],
+				m[3], m[4], m[5],
+				m[6], m[7], m[8];
+			return true;
+		}
+
+		if (value->a.size() == 3) {
+			for (int r = 0; r < 3; ++r) {
+				const JsonValue& row = value->a[(size_t)r];
+				if (!row.IsArray() || row.a.size() != 3) return false;
+				for (int c = 0; c < 3; ++c) {
+					auto v = JDouble(&row.a[(size_t)c]);
+					if (!v.has_value()) return false;
+					out(r, c) = *v;
+				}
+			}
+			return true;
+		}
+
+		return false;
+	}
+
 	std::optional<std::string> XAttr(const XmlNode* node, const std::string& key)
 	{
 		if (node == nullptr) return std::nullopt;
@@ -142,6 +176,23 @@ namespace
 		double x = 0.0, y = 0.0, z = 0.0;
 		if (!ParseDouble(tokens[0], x) || !ParseDouble(tokens[1], y) || !ParseDouble(tokens[2], z)) return false;
 		out = { x, y, z };
+		return true;
+	}
+
+	bool ParseMat3String(const std::string& value, Eigen::Matrix3d& out)
+	{
+		const std::vector<std::string> tokens = SplitTokens(value);
+		if (tokens.size() != 9) return false;
+
+		std::array<double, 9> m = {};
+		for (int i = 0; i < 9; ++i) {
+			if (!ParseDouble(tokens[(size_t)i], m[(size_t)i])) return false;
+		}
+
+		out <<
+			m[0], m[1], m[2],
+			m[3], m[4], m[5],
+			m[6], m[7], m[8];
 		return true;
 	}
 
@@ -314,6 +365,18 @@ namespace
 					if (auto v = JBool(JGet(&node, "fixed"))) rigid_body.fixed = *v;
 					ParseGeometryJson(JGet(&node, "geometry"), rigid_body.geometry);
 					ParseTransformJson(JGet(&node, "transform"), rigid_body.transform);
+					Eigen::Vector3d inertia_diagonal = Eigen::Vector3d::Zero();
+					if (JVec3(JGet(&node, "inertia_diagonal"), inertia_diagonal)) {
+						Eigen::Matrix3d tensor = Eigen::Matrix3d::Zero();
+						tensor(0, 0) = inertia_diagonal.x();
+						tensor(1, 1) = inertia_diagonal.y();
+						tensor(2, 2) = inertia_diagonal.z();
+						rigid_body.inertia_tensor = tensor;
+					}
+					Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Zero();
+					if (JMat3(JGet(&node, "inertia_tensor"), inertia_tensor)) {
+						rigid_body.inertia_tensor = inertia_tensor;
+					}
 					if (const JsonValue* contact = JGet(&node, "contact"); contact != nullptr && contact->IsObject()) {
 						if (auto v = JDouble(JGet(contact, "thickness"))) rigid_body.contact_thickness = *v;
 						if (auto v = JDouble(JGet(contact, "friction"))) rigid_body.friction = *v;
@@ -538,6 +601,40 @@ namespace
 					if (auto v = XBool(node, "fixed")) rigid_body.fixed = *v;
 					ParseGeometryXml(node->FindChild("geometry"), rigid_body.geometry);
 					ParseTransformXml(node->FindChild("transform"), rigid_body.transform);
+					if (auto v = XAttr(node, "inertia_diagonal")) {
+						Eigen::Vector3d diagonal = Eigen::Vector3d::Zero();
+						if (ParseVec3String(*v, diagonal)) {
+							Eigen::Matrix3d tensor = Eigen::Matrix3d::Zero();
+							tensor(0, 0) = diagonal.x();
+							tensor(1, 1) = diagonal.y();
+							tensor(2, 2) = diagonal.z();
+							rigid_body.inertia_tensor = tensor;
+						}
+					}
+					if (auto v = XAttr(node, "inertia_tensor")) {
+						Eigen::Matrix3d tensor = Eigen::Matrix3d::Zero();
+						if (ParseMat3String(*v, tensor)) {
+							rigid_body.inertia_tensor = tensor;
+						}
+					}
+					if (const XmlNode* inertia = node->FindChild("inertia"); inertia != nullptr) {
+						if (auto v = XAttr(inertia, "diagonal")) {
+							Eigen::Vector3d diagonal = Eigen::Vector3d::Zero();
+							if (ParseVec3String(*v, diagonal)) {
+								Eigen::Matrix3d tensor = Eigen::Matrix3d::Zero();
+								tensor(0, 0) = diagonal.x();
+								tensor(1, 1) = diagonal.y();
+								tensor(2, 2) = diagonal.z();
+								rigid_body.inertia_tensor = tensor;
+							}
+						}
+						if (auto v = XAttr(inertia, "tensor")) {
+							Eigen::Matrix3d tensor = Eigen::Matrix3d::Zero();
+							if (ParseMat3String(*v, tensor)) {
+								rigid_body.inertia_tensor = tensor;
+							}
+						}
+					}
 					if (const XmlNode* contact = node->FindChild("contact"); contact != nullptr) {
 						if (auto v = XDouble(contact, "thickness")) rigid_body.contact_thickness = *v;
 						if (auto v = XDouble(contact, "friction")) rigid_body.friction = *v;

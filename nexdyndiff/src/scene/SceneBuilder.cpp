@@ -344,6 +344,9 @@ nexdyndiff::scene::BuildResult nexdyndiff::scene::SceneBuilder::Build(Simulation
 		}
 
 		ApplyTransform(rigid_body_handler.rigidbody, rigid_body.transform);
+		if (rigid_body.inertia_tensor.has_value()) {
+			rigid_body_handler.rigidbody.set_local_inertia_tensor(*rigid_body.inertia_tensor);
+		}
 		if (rigid_body.fixed) {
 			simulation.rigidbodies->add_constraint_fix(rigid_body_handler.rigidbody);
 		}

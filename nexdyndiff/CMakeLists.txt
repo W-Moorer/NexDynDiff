@@ -157,6 +157,7 @@ set(UTILS_FILES
 	src/utils/unordered_array_set_and_map.h
 	src/utils/Blends.cpp
 	src/utils/Blends.h
+	src/utils/TimeSeriesUtils.h
 	src/utils/include.h
 	)
 

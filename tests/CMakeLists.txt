@@ -21,6 +21,7 @@ add_subdirectory(extern/Catch2)
 set(SOURCE_FILES
     rb_constraints.cpp
     SceneLoader.cpp
+    TimeSeriesUtils.cpp
 	)
 
 # Create executable    

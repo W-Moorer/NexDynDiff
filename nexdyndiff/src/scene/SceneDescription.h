@@ -90,6 +90,7 @@ namespace nexdyndiff::scene
 		bool fixed = false;
 		GeometryDefinition geometry;
 		TransformDefinition transform;
+		std::optional<Eigen::Matrix3d> inertia_tensor;
 		std::optional<double> contact_thickness;
 		std::optional<double> friction;
 	};

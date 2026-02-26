@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "double_pendulum"
+  },
+  "settings": {
+    "output": {
+      "simulation_name": "double_pendulum",
+      "output_directory": "./output/double_pendulum",
+      "codegen_directory": "./codegen/double_pendulum",
+      "enable_output": false
+    },
+    "simulation": {
+      "gravity": [0.0, -9.81, 0.0],
+      "max_time_step_size": 0.001,
+      "use_adaptive_time_step": true,
+      "init_frictional_contact": false
+    },
+    "newton": {
+      "residual_type": "Force",
+      "residual_tolerance": 1.0e-8,
+      "linear_system_solver": "DirectLU",
+      "max_newton_iterations": 100,
+      "project_to_PD": true
+    },
+    "execution": {
+      "end_simulation_time": 3.0,
+      "n_threads": -1
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "Ground",
+        "label": "Ground",
+        "geometry": {
+          "type": "box",
+          "size": [0.1, 0.1, 0.1]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [1.0, 1.0, 1.0],
+        "fixed": true,
+        "transform": {
+          "translation": [0.0, 0.0, 0.0]
+        }
+      },
+      {
+        "id": "Body1",
+        "label": "Body1",
+        "geometry": {
+          "type": "box",
+          "size": [1.0, 0.05, 0.05]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [1.0, 1.0, 1.0],
+        "transform": {
+          "translation": [0.5, 0.0, 0.0]
+        }
+      },
+      {
+        "id": "Body2",
+        "label": "Body2",
+        "geometry": {
+          "type": "box",
+          "size": [1.0, 0.05, 0.05]
+        },
+        "mass": 1.0,
+        "inertia_diagonal": [1.0, 1.0, 1.0],
+        "transform": {
+          "translation": [1.5, 0.0, 0.0]
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "id": "Joint1",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Ground",
+      "body_b": "Body1",
+      "pivot": [0.0, 0.0, 0.0],
+      "axis": [0.0, 0.0, 1.0]
+    },
+    {
+      "id": "Joint2",
+      "type": "rigidbody_constraint",
+      "constraint_type": "hinge",
+      "body_a": "Body1",
+      "body_b": "Body2",
+      "pivot": [1.0, 0.0, 0.0],
+      "axis": [0.0, 0.0, 1.0]
+    }
+  ]
+}
+

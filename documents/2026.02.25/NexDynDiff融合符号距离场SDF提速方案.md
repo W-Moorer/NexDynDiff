@@ -311,3 +311,146 @@ $$
 - [nexdyndiff/src/core/NewtonsMethod.cpp](nexdyndiff/src/core/NewtonsMethod.cpp#L185-L215)
 
 可先围绕以上文件做最小原型。
+
+---
+
+## 12. Phase 1 最小原型接口草案与伪代码
+
+本节给出“可立即动手”的最小改动集合，目标是先实现 `TMCD + SDF filter`，不改现有接触能量形式。
+
+## 12.1 建议新增配置项（EnergyFrictionalContact）
+
+建议在 `EnergyFrictionalContact::GlobalParams` 或新建 `SDFParams` 中新增：
+
+- `bool enable_sdf_acceleration = false;`
+- `double sdf_filter_margin = 0.25;`（相对接触厚度的系数）
+- `double sdf_narrow_band = 3.0 * default_contact_thickness;`
+- `enum class SDFMode { Off, FilterOnly, FilterAndApproxDistance };`
+- `SDFMode sdf_mode = SDFMode::FilterOnly;`
+
+说明：
+
+- `FilterOnly` 为首发推荐模式；
+- `FilterAndApproxDistance` 仅用于实验，不建议默认打开。
+
+## 12.2 建议新增绑定接口（EnergyFrictionalContact）
+
+```cpp
+struct SDFConfig {
+   double voxel_size;
+   double narrow_band;
+   bool is_static;
+};
+
+void bind_sdf_to_handler(const ContactHandler& h, const SDFConfig& cfg);
+void unbind_sdf_from_handler(const ContactHandler& h);
+bool has_sdf_bound(const ContactHandler& h) const;
+```
+
+语义建议：
+
+- 只为需要加速的接触对象绑定 SDF；
+- 先支持静态物体（`is_static=true`），动态对象后续扩展。
+
+## 12.3 建议新增内部辅助函数
+
+```cpp
+bool _sdf_filter_pair(
+   int group_a,
+   int group_b,
+   const Eigen::Vector3d& query_point,
+   double contact_distance_threshold,
+   double* optional_approx_distance = nullptr) const;
+
+double _compute_pair_threshold(int group_a, int group_b) const;
+```
+
+规则建议：
+
+- 若两侧都无 SDF 绑定：返回 `true`（保持原行为）；
+- 若单侧有 SDF：用该侧 SDF 估计距离做 early reject；
+- 若双侧有 SDF：取更保守判据（如 `min(phi_A, phi_B)` 或双向一致判据）。
+
+## 12.4 接入点伪代码（接触候选更新）
+
+位置：`_before_energy_evaluation__update_contacts(...)`
+
+```cpp
+proximity = _run_proximity_detection(...)
+
+for pair in proximity.point_triangle / edge_edge:
+   threshold = _compute_pair_threshold(groupA, groupB)
+
+   if enable_sdf_acceleration and sdf_mode != Off:
+      pass = sdf_filter(pair, threshold, optional_approx_distance)
+      if not pass:
+         continue
+
+   // 保持原有分发逻辑
+   push_back to contacts_deformables / contacts_rb / contacts_rb_deformables
+```
+
+关键点：
+
+- 仅做过滤，不改连接关系与 SymX 能量声明；
+- 这样可保证回退路径清晰（关闭开关即恢复原行为）。
+
+## 12.5 接入点伪代码（摩擦候选更新）
+
+位置：`_before_time_step__update_friction_contacts(...)`
+
+```cpp
+proximity = _run_proximity_detection(..., dt=0)
+
+for pair in proximity:
+   if !friction_enabled: continue
+   if mu == 0: continue
+
+   threshold = _compute_pair_threshold(groupA, groupB)
+   if enable_sdf_acceleration and sdf_mode != Off:
+      pass = sdf_filter(pair, threshold, optional_approx_distance)
+      if not pass:
+         continue
+
+   // 保持现有 point_point / point_edge / point_triangle / edge_edge 分发
+   push_back to friction_* containers
+```
+
+关键点：
+
+- 与接触候选使用同一过滤器，避免两套阈值逻辑不一致；
+- 先保证接触与摩擦候选的一致可解释性。
+
+## 12.6 建议新增统计与日志字段
+
+在 `Logger` 增加：
+
+- `contact_candidates_total`
+- `contact_candidates_after_sdf`
+- `friction_candidates_total`
+- `friction_candidates_after_sdf`
+- `sdf_filter_time`
+
+建议每步输出：
+
+- 过滤率：`1 - after_sdf / total`
+- 每步过滤耗时占比。
+
+## 12.7 最小验收标准（Phase 1）
+
+通过以下条件即认为原型成功：
+
+1. `enable_sdf_acceleration=false` 时，结果与基线一致；
+2. `FilterOnly` 下，穿透与失败步比例不劣化（允许极小波动）；
+3. 接触候选构建耗时显著下降；
+4. 端到端时间在目标场景有正收益。
+
+## 12.8 推荐实施顺序（文件级）
+
+1. `EnergyFrictionalContact.h`：新增参数、枚举、接口声明；
+2. `EnergyFrictionalContact.cpp`：实现绑定表与 `_sdf_filter_pair`；
+3. 在两个回调中插入过滤调用；
+4. 增加日志字段与输出；
+5. 用静态障碍场景先验证，再扩展多体场景。
+
+完成上述步骤后，再进入 `point_to_sdf` 与 `sdf_surface_quadrature` 研究分支。

@@ -14,12 +14,38 @@ using namespace Catch::Matchers;
 
 namespace
 {
-	std::filesystem::path MakeTempDir()
+	// RAII 封装：测试结束后自动清理临时目录
+	class TempDirGuard
+	{
+	public:
+		explicit TempDirGuard(const std::filesystem::path& path) : m_path(path) {}
+		~TempDirGuard()
+		{
+			try {
+				std::filesystem::remove_all(m_path);
+			}
+			catch (...) {
+				// 忽略清理失败，避免掩盖真实测试错误
+			}
+		}
+		TempDirGuard(const TempDirGuard&) = delete;
+		TempDirGuard& operator=(const TempDirGuard&) = delete;
+		TempDirGuard(TempDirGuard&&) = default;
+		TempDirGuard& operator=(TempDirGuard&&) = default;
+
+		// 隐式转换为 std::filesystem::path，使现有代码无需修改
+		operator std::filesystem::path() const { return m_path; }
+		const std::filesystem::path& path() const { return m_path; }
+	private:
+		std::filesystem::path m_path;
+	};
+
+	TempDirGuard MakeTempDir()
 	{
 		const auto timestamp = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 		const std::filesystem::path dir = std::filesystem::path("temps") / "scene_tests" / std::to_string(timestamp);
 		std::filesystem::create_directories(dir);
-		return dir;
+		return TempDirGuard(dir);
 	}
 
 	void WriteFile(const std::filesystem::path& path, const std::string& content)
@@ -127,7 +153,7 @@ TEST_CASE("SceneParser supports JSON and XML", "[scene_loader]")
 
 TEST_CASE("SceneLoader builds transforms and handlers from JSON", "[scene_loader]")
 {
-	const std::filesystem::path tmp_dir = MakeTempDir();
+	auto tmp_dir = MakeTempDir();
 	const std::filesystem::path scene_path = tmp_dir / "scene.json";
 
 	const std::string scene = R"json(
@@ -234,7 +260,7 @@ TEST_CASE("SceneLoader builds transforms and handlers from JSON", "[scene_loader
 
 TEST_CASE("SceneLoader fails on unknown material", "[scene_loader]")
 {
-	const std::filesystem::path tmp_dir = MakeTempDir();
+	auto tmp_dir = MakeTempDir();
 	const std::filesystem::path scene_path = tmp_dir / "invalid.json";
 
 	const std::string scene = R"json(
@@ -273,9 +299,60 @@ TEST_CASE("SceneLoader fails on unknown material", "[scene_loader]")
 	CHECK_THAT(load.parse_result.errors.front().message, ContainsSubstring("Unknown material"));
 }
 
+TEST_CASE("SceneLoader applies rigid body inertia tensor override", "[scene_loader]")
+{
+	auto tmp_dir = MakeTempDir();
+	const std::filesystem::path scene_path = tmp_dir / "inertia_override.json";
+
+	const std::string scene = R"json(
+{
+  "settings": {
+    "output": {
+      "simulation_name": "inertia_override",
+      "enable_output": false
+    },
+    "simulation": {
+      "init_frictional_contact": false
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "rb_1",
+        "geometry": {
+          "type": "box",
+          "size": [1.0, 1.0, 1.0]
+        },
+        "mass": 1.0,
+        "inertia_tensor": [
+          [1.0, 0.1, 0.0],
+          [0.1, 2.0, 0.2],
+          [0.0, 0.2, 3.0]
+        ]
+      }
+    ]
+  }
+}
+)json";
+
+	WriteFile(scene_path, scene);
+	const auto load = nexdyndiff::scene::SceneLoader::Load(scene_path);
+	REQUIRE(load.success());
+	REQUIRE(load.build_result.rigid_bodies.count("rb_1") == 1);
+
+	const Eigen::Matrix3d inertia = load.build_result.rigid_bodies.at("rb_1").get_local_inertia_tensor();
+	CHECK_THAT(inertia(0, 0), WithinAbs(1.0, 1e-12));
+	CHECK_THAT(inertia(0, 1), WithinAbs(0.1, 1e-12));
+	CHECK_THAT(inertia(1, 0), WithinAbs(0.1, 1e-12));
+	CHECK_THAT(inertia(1, 1), WithinAbs(2.0, 1e-12));
+	CHECK_THAT(inertia(1, 2), WithinAbs(0.2, 1e-12));
+	CHECK_THAT(inertia(2, 1), WithinAbs(0.2, 1e-12));
+	CHECK_THAT(inertia(2, 2), WithinAbs(3.0, 1e-12));
+}
+
 TEST_CASE("SceneLoader scripted events update gravity and support transform_bc", "[scene_loader]")
 {
-	const std::filesystem::path tmp_dir = MakeTempDir();
+	auto tmp_dir = MakeTempDir();
 	const std::filesystem::path scene_path = tmp_dir / "events.json";
 
 	const std::string scene = R"json(
@@ -368,7 +445,7 @@ TEST_CASE("SceneLoader scripted events update gravity and support transform_bc",
 
 TEST_CASE("SceneLoader async load and cache invalidation on file change", "[scene_loader]")
 {
-	const std::filesystem::path tmp_dir = MakeTempDir();
+	auto tmp_dir = MakeTempDir();
 	const std::filesystem::path scene_path = tmp_dir / "cache.json";
 
 	const std::string valid_scene = R"json(

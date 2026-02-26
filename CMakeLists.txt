@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(nexdyndiff)
 add_subdirectory(examples)
+add_subdirectory(tools)
 add_subdirectory(tests)
 
 option(NEXDYNDIFF_BUILD_PYTHON_BINDINGS "Build Python Bindings" OFF)
