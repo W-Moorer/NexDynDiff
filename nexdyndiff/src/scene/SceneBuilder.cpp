@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <limits>
 #include <unordered_set>
 
 #include "../utils/include.h"
@@ -158,7 +159,11 @@ nexdyndiff::scene::BuildResult nexdyndiff::scene::SceneBuilder::Build(Simulation
 	if (m_description.contact_global.default_contact_thickness.has_value()) global_contact_params.default_contact_thickness = *m_description.contact_global.default_contact_thickness;
 	if (m_description.contact_global.min_contact_stiffness.has_value()) global_contact_params.min_contact_stiffness = *m_description.contact_global.min_contact_stiffness;
 	if (m_description.contact_global.friction_stick_slide_threshold.has_value()) global_contact_params.friction_stick_slide_threshold = *m_description.contact_global.friction_stick_slide_threshold;
+	if (m_description.contact_global.ccd_eta.has_value()) global_contact_params.ccd_eta = *m_description.contact_global.ccd_eta;
+	if (m_description.contact_global.strict_feasibility.has_value()) global_contact_params.strict_feasibility = *m_description.contact_global.strict_feasibility;
 	simulation.interactions->contact->set_global_params(global_contact_params);
+	if (m_description.contact_global.ipc_barrier_type.has_value()) simulation.interactions->contact->set_ipc_barrier_type(*m_description.contact_global.ipc_barrier_type);
+	if (m_description.contact_global.ipc_friction_type.has_value()) simulation.interactions->contact->set_ipc_friction_type(*m_description.contact_global.ipc_friction_type);
 
 	const bool has_global_default_thickness = global_contact_params.default_contact_thickness > 0.0;
 	const bool contact_initialized = simulation.get_settings().simulation.init_frictional_contact;
@@ -337,6 +342,58 @@ nexdyndiff::scene::BuildResult nexdyndiff::scene::SceneBuilder::Build(Simulation
 				rigid_body.geometry.stacks,
 				contact_params);
 			rigid_body_handler = added.handler;
+		}
+		else if (geometry_type == "file") {
+			const std::filesystem::path full_path = ResolvePath(m_base_path, rigid_body.geometry.path);
+			const std::string extension = ExtensionLower(full_path);
+			if (extension != ".obj") {
+				AddError(result, path_prefix + ".geometry.path", "Unsupported rigid body file extension: " + extension);
+				continue;
+			}
+			if (!std::filesystem::exists(full_path)) {
+				AddError(result, path_prefix + ".geometry.path", "Mesh file not found: " + full_path.string());
+				continue;
+			}
+
+			const std::vector<nexdyndiff::Mesh<3>> meshes = nexdyndiff::load_obj(full_path.string());
+			if (meshes.empty()) {
+				AddError(result, path_prefix + ".geometry.path", "OBJ file does not contain any mesh: " + full_path.string());
+				continue;
+			}
+
+			auto mesh = meshes.front();
+			auto [clean_vertices, clean_triangles] = nexdyndiff::clean_triangle_mesh(mesh.vertices, mesh.conn);
+			mesh.vertices = std::move(clean_vertices);
+			mesh.conn = std::move(clean_triangles);
+			if (mesh.conn.empty()) {
+				AddError(result, path_prefix + ".geometry.path", "OBJ mesh became empty after cleaning: " + full_path.string());
+				continue;
+			}
+			Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Zero();
+			if (rigid_body.inertia_tensor.has_value()) {
+				inertia_tensor = *rigid_body.inertia_tensor;
+			}
+			else {
+				Eigen::Vector3d pmin = Eigen::Vector3d::Constant(std::numeric_limits<double>::infinity());
+				Eigen::Vector3d pmax = Eigen::Vector3d::Constant(-std::numeric_limits<double>::infinity());
+				for (const auto& v : mesh.vertices) {
+					pmin = pmin.cwiseMin(v);
+					pmax = pmax.cwiseMax(v);
+				}
+				const Eigen::Vector3d size = (pmax - pmin).cwiseMax(Eigen::Vector3d::Constant(1e-6));
+				const double m = rigid_body.mass;
+				inertia_tensor(0, 0) = (m / 12.0) * (size.y() * size.y() + size.z() * size.z());
+				inertia_tensor(1, 1) = (m / 12.0) * (size.x() * size.x() + size.z() * size.z());
+				inertia_tensor(2, 2) = (m / 12.0) * (size.x() * size.x() + size.y() * size.y());
+			}
+
+			rigid_body_handler = simulation.presets->rigidbodies->add(
+				rigid_body.label,
+				rigid_body.mass,
+				inertia_tensor,
+				mesh.vertices,
+				mesh.conn,
+				contact_params);
 		}
 		else {
 			AddError(result, path_prefix + ".geometry.type", "Unsupported rigid body geometry type: " + rigid_body.geometry.type);

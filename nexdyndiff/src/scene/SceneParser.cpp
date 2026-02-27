@@ -441,6 +441,10 @@ namespace
 					if (auto v = JDouble(JGet(global, "default_contact_thickness"))) scene.contact_global.default_contact_thickness = *v;
 					if (auto v = JDouble(JGet(global, "min_contact_stiffness"))) scene.contact_global.min_contact_stiffness = *v;
 					if (auto v = JDouble(JGet(global, "friction_stick_slide_threshold"))) scene.contact_global.friction_stick_slide_threshold = *v;
+					if (auto v = JDouble(JGet(global, "ccd_eta"))) scene.contact_global.ccd_eta = *v;
+					if (auto v = JBool(JGet(global, "strict_feasibility"))) scene.contact_global.strict_feasibility = *v;
+					if (auto v = JString(JGet(global, "ipc_barrier_type"))) scene.contact_global.ipc_barrier_type = *v;
+					if (auto v = JString(JGet(global, "ipc_friction_type"))) scene.contact_global.ipc_friction_type = *v;
 				}
 				if (const JsonValue* pairs = JGet(contact, "pairs"); pairs != nullptr && pairs->IsArray()) {
 					for (const JsonValue& pair_node : pairs->a) {
@@ -715,6 +719,10 @@ namespace
 					if (auto v = XDouble(global, "default_contact_thickness")) scene.contact_global.default_contact_thickness = *v;
 					if (auto v = XDouble(global, "min_contact_stiffness")) scene.contact_global.min_contact_stiffness = *v;
 					if (auto v = XDouble(global, "friction_stick_slide_threshold")) scene.contact_global.friction_stick_slide_threshold = *v;
+					if (auto v = XDouble(global, "ccd_eta")) scene.contact_global.ccd_eta = *v;
+					if (auto v = XBool(global, "strict_feasibility")) scene.contact_global.strict_feasibility = *v;
+					if (auto v = XAttr(global, "ipc_barrier_type")) scene.contact_global.ipc_barrier_type = *v;
+					if (auto v = XAttr(global, "ipc_friction_type")) scene.contact_global.ipc_friction_type = *v;
 				}
 				for (const XmlNode* pair_node : contact->FindChildren("friction_pair")) {
 					nexdyndiff::scene::ContactPairDefinition pair;

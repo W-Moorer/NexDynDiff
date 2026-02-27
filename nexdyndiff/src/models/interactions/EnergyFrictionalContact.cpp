@@ -1,5 +1,11 @@
 #include "EnergyFrictionalContact.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cmath>
+#include <iomanip>
+#include <limits>
+
 #include <fmt/format.h>
 
 #include "../TimeIntegration.h"
@@ -19,10 +25,15 @@ EnergyFrictionalContact::EnergyFrictionalContact(core::NexDynDiff& nexdyndiff, c
 	// Callbacks
 	nexdyndiff.callbacks.add_before_time_step([&]() { this->_before_time_step__update_friction_contacts(nexdyndiff); });
 	nexdyndiff.callbacks.add_before_energy_evaluation([&]() { this->_before_energy_evaluation__update_contacts(nexdyndiff); });
+	nexdyndiff.callbacks.add_max_allowed_step([&]() { return this->_compute_max_allowed_step(nexdyndiff, nexdyndiff.dt); });
 	nexdyndiff.callbacks.add_is_intermidiate_state_valid([&]() { return this->_is_intermidiate_state_valid(nexdyndiff, /*is_initial_check=*/false); });
 	nexdyndiff.callbacks.add_is_initial_state_valid([&]() { return this->_is_intermidiate_state_valid(nexdyndiff, /*is_initial_check=*/true); });
+	nexdyndiff.callbacks.add_is_converged_state_valid([&]() { return this->_is_intermidiate_state_valid(nexdyndiff, /*is_initial_check=*/false); });
 	nexdyndiff.callbacks.add_on_intermidiate_state_invalid([&]() { this->_on_intermidiate_state_invalid(nexdyndiff); });
 	nexdyndiff.callbacks.add_on_time_step_accepted([&]() { this->_on_time_step_accepted(nexdyndiff); });
+	nexdyndiff.callbacks.add_write_frame([&]() { this->_write_hard_guarantee_metrics(nexdyndiff); });
+
+	this->hard_guarantee_csv_path = std::filesystem::path(nexdyndiff.settings.output.output_directory) / "IPC_hard_guarantee.csv";
 
 	// Contact declarations
 	this->_energies_contact_deformables(nexdyndiff);
@@ -42,6 +53,44 @@ void EnergyFrictionalContact::set_global_params(const GlobalParams& params)
 {
 	this->global_params = params;
 	this->contact_stiffness = params.min_contact_stiffness;
+}
+void EnergyFrictionalContact::set_ipc_barrier_type(const IPCBarrierType type)
+{
+	this->ipc_barrier_type = type;
+}
+void EnergyFrictionalContact::set_ipc_barrier_type(const std::string& type)
+{
+	std::string lowered = type;
+	std::transform(lowered.begin(), lowered.end(), lowered.begin(), [](unsigned char c) { return (char)std::tolower(c); });
+	if (lowered == "cubic") {
+		this->ipc_barrier_type = IPCBarrierType::Cubic;
+	}
+	else if (lowered == "log") {
+		this->ipc_barrier_type = IPCBarrierType::Log;
+	}
+	else {
+		std::cout << "nexdyndiff error: Unknown IPC barrier type '" << type << "'. Supported: cubic|log." << std::endl;
+		exit(-1);
+	}
+}
+void EnergyFrictionalContact::set_ipc_friction_type(const IPCFrictionType type)
+{
+	this->ipc_friction_type = type;
+}
+void EnergyFrictionalContact::set_ipc_friction_type(const std::string& type)
+{
+	std::string lowered = type;
+	std::transform(lowered.begin(), lowered.end(), lowered.begin(), [](unsigned char c) { return (char)std::tolower(c); });
+	if (lowered == "c0") {
+		this->ipc_friction_type = IPCFrictionType::C0;
+	}
+	else if (lowered == "c1") {
+		this->ipc_friction_type = IPCFrictionType::C1;
+	}
+	else {
+		std::cout << "nexdyndiff error: Unknown IPC friction type '" << type << "'. Supported: c0|c1." << std::endl;
+		exit(-1);
+	}
 }
 double nexdyndiff::EnergyFrictionalContact::get_contact_stiffness() const
 {
@@ -263,6 +312,130 @@ const tmcd::IntersectionResults& EnergyFrictionalContact::_run_intersection_dete
 
 	this->id.set_n_threads(nexdyndiff.settings.execution.n_threads);
 	return this->id.run();
+}
+double EnergyFrictionalContact::_compute_max_allowed_step(core::NexDynDiff& nexdyndiff, const double dt)
+{
+	if (!this->global_params.collisions_enabled) { return 1.0; }
+	if (!this->global_params.intersection_test_enabled) { return 1.0; }
+	if (this->is_empty()) { return 1.0; }
+
+	auto is_valid = [&](double step) {
+		const auto& intersections = this->_run_intersection_detection(nexdyndiff, dt * step);
+		if (!intersections.edge_triangle.empty()) {
+			return false;
+		}
+		if (this->global_params.strict_feasibility) {
+			const auto& proximity = this->_run_proximity_detection(nexdyndiff, dt * step);
+			if (this->_has_clearance_violation(proximity, this->global_params.ccd_eta)) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	if (is_valid(1.0)) {
+		return 1.0;
+	}
+
+	double low = 0.0;
+	double high = 1.0;
+	for (int i = 0; i < 24; i++) {
+		const double mid = 0.5 * (low + high);
+		if (is_valid(mid)) {
+			low = mid;
+		}
+		else {
+			high = mid;
+		}
+	}
+
+	const double eta = std::clamp(this->global_params.ccd_eta, 0.0, 1.0);
+	return std::max(0.0, low * eta);
+}
+bool EnergyFrictionalContact::_has_clearance_violation(const tmcd::ProximityResults& proximity, double eta)
+{
+	auto violated = [&](double d, int group_a, int group_b) {
+		const double dhat = this->_get_contact_distance(group_a, group_b);
+		return d < eta * dhat;
+	};
+
+	for (const auto& pair : proximity.point_triangle.point_point) {
+		if (violated(pair.distance, pair.first.set, pair.second.point.set)) return true;
+	}
+	for (const auto& pair : proximity.point_triangle.point_edge) {
+		if (violated(pair.distance, pair.first.set, pair.second.edge.set)) return true;
+	}
+	for (const auto& pair : proximity.point_triangle.point_triangle) {
+		if (violated(pair.distance, pair.first.set, pair.second.set)) return true;
+	}
+	for (const auto& pair : proximity.edge_edge.point_point) {
+		if (violated(pair.distance, pair.first.edge.set, pair.second.edge.set)) return true;
+	}
+	for (const auto& pair : proximity.edge_edge.point_edge) {
+		if (violated(pair.distance, pair.first.edge.set, pair.second.set)) return true;
+	}
+	for (const auto& pair : proximity.edge_edge.edge_edge) {
+		if (violated(pair.distance, pair.first.set, pair.second.set)) return true;
+	}
+
+	return false;
+}
+void EnergyFrictionalContact::_write_hard_guarantee_metrics(core::NexDynDiff& nexdyndiff)
+{
+	if (!this->global_params.collisions_enabled) { return; }
+	if (this->is_empty()) { return; }
+
+	if (!this->hard_guarantee_csv_initialized) {
+		std::filesystem::create_directories(this->hard_guarantee_csv_path.parent_path());
+		std::ofstream out(this->hard_guarantee_csv_path, std::ios::out | std::ios::trunc);
+		out << "time,min_proximity_distance,eta_d_hat_pair,is_violation\n";
+		this->hard_guarantee_csv_initialized = true;
+	}
+
+	const double eta = std::clamp(this->global_params.ccd_eta, 0.0, 1.0);
+	const auto& proximity = this->_run_proximity_detection(nexdyndiff, /*dt=*/0.0);
+
+	double min_distance = std::numeric_limits<double>::infinity();
+	double threshold_at_min = 0.0;
+
+	auto update_min = [&](double d, int group_a, int group_b) {
+		if (d < min_distance) {
+			min_distance = d;
+			threshold_at_min = eta * this->_get_contact_distance(group_a, group_b);
+		}
+	};
+
+	for (const auto& pair : proximity.point_triangle.point_point) {
+		update_min(pair.distance, pair.first.set, pair.second.point.set);
+	}
+	for (const auto& pair : proximity.point_triangle.point_edge) {
+		update_min(pair.distance, pair.first.set, pair.second.edge.set);
+	}
+	for (const auto& pair : proximity.point_triangle.point_triangle) {
+		update_min(pair.distance, pair.first.set, pair.second.set);
+	}
+	for (const auto& pair : proximity.edge_edge.point_point) {
+		update_min(pair.distance, pair.first.edge.set, pair.second.edge.set);
+	}
+	for (const auto& pair : proximity.edge_edge.point_edge) {
+		update_min(pair.distance, pair.first.edge.set, pair.second.set);
+	}
+	for (const auto& pair : proximity.edge_edge.edge_edge) {
+		update_min(pair.distance, pair.first.set, pair.second.set);
+	}
+
+	if (!std::isfinite(min_distance)) {
+		min_distance = 1e30;
+		threshold_at_min = 0.0;
+	}
+
+	const int is_violation = (min_distance < threshold_at_min) ? 1 : 0;
+	std::ofstream out(this->hard_guarantee_csv_path, std::ios::out | std::ios::app);
+	out << std::setprecision(10)
+		<< nexdyndiff.current_time << ","
+		<< min_distance << ","
+		<< threshold_at_min << ","
+		<< is_violation << "\n";
 }
 
 /* ============================================================================================= */
@@ -792,7 +965,18 @@ bool EnergyFrictionalContact::_is_intermidiate_state_valid(core::NexDynDiff& nex
 		}
 	}
 
-	return !collision_found;
+	if (collision_found) {
+		return false;
+	}
+
+	if (this->global_params.strict_feasibility) {
+		const auto& proximity = this->_run_proximity_detection(nexdyndiff, nexdyndiff.dt);
+		if (this->_has_clearance_violation(proximity, this->global_params.ccd_eta)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 void nexdyndiff::EnergyFrictionalContact::_on_intermidiate_state_invalid(core::NexDynDiff& nexdyndiff)
 {

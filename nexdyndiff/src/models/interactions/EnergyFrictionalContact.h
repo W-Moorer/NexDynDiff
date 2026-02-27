@@ -1,5 +1,7 @@
 #pragma once
 #include <TriangleMeshCollisionDetection>
+#include <fstream>
+#include <filesystem>
 
 #include "../../utils/unordered_array_set_and_map.h"
 #include "../deformables/PointDynamics.h"
@@ -31,6 +33,8 @@ namespace nexdyndiff
 			NEXDYNDIFF_PARAM_NO_VALIDATION(bool, triangle_point_enabled, true)
 			NEXDYNDIFF_PARAM_NO_VALIDATION(bool, edge_edge_enabled, true)
 			NEXDYNDIFF_PARAM_NO_VALIDATION(bool, intersection_test_enabled, true)
+			NEXDYNDIFF_PARAM_NO_VALIDATION(double, ccd_eta, 0.9)
+			NEXDYNDIFF_PARAM_NO_VALIDATION(bool, strict_feasibility, true)
 		};
 		struct Params
 		{
@@ -96,6 +100,10 @@ namespace nexdyndiff
 		tmcd::IntersectionDetection id;
 		tmcd::ProximityDetection pd;
 
+		// Hard-guarantee diagnostics
+		std::filesystem::path hard_guarantee_csv_path;
+		bool hard_guarantee_csv_initialized = false;
+
 
 	public:
 		/* Methods */
@@ -114,6 +122,10 @@ namespace nexdyndiff
 		// Setters and getters
 		GlobalParams get_global_params() const;
 		void set_global_params(const GlobalParams& params);
+		void set_ipc_barrier_type(const IPCBarrierType type);
+		void set_ipc_barrier_type(const std::string& type);
+		void set_ipc_friction_type(const IPCFrictionType type);
+		void set_ipc_friction_type(const std::string& type);
 		void set_contact_thickness(const Handler& obj, const double contact_thickness);
 		double get_contact_stiffness() const;
 		void set_friction(const Handler& obj0, const Handler& obj1, const double coulombs_coefficient);
@@ -132,6 +144,9 @@ namespace nexdyndiff
 		void _update_vertices(core::NexDynDiff& nexdyndiff, const double dt);
 		const tmcd::ProximityResults& _run_proximity_detection(core::NexDynDiff& nexdyndiff, const double dt);
 		const tmcd::IntersectionResults& _run_intersection_detection(core::NexDynDiff& nexdyndiff, const double dt);
+		double _compute_max_allowed_step(core::NexDynDiff& nexdyndiff, const double dt);
+		bool _has_clearance_violation(const tmcd::ProximityResults& proximity, double eta);
+		void _write_hard_guarantee_metrics(core::NexDynDiff& nexdyndiff);
 
 		// Collision helpers
 		template<std::size_t N>

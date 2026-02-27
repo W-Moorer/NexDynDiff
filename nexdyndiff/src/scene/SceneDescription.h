@@ -153,6 +153,10 @@ namespace nexdyndiff::scene
 		std::optional<double> default_contact_thickness;
 		std::optional<double> min_contact_stiffness;
 		std::optional<double> friction_stick_slide_threshold;
+		std::optional<double> ccd_eta;
+		std::optional<bool> strict_feasibility;
+		std::optional<std::string> ipc_barrier_type;
+		std::optional<std::string> ipc_friction_type;
 	};
 
 	struct ContactPairDefinition

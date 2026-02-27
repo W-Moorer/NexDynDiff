@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "basic_contact",
+    "source_rmd": "E:/workspace/NexDynDiff/assets/models/basic_contact/basic_contact.rmd"
+  },
+  "settings": {
+    "output": {
+      "simulation_name": "basic_contact",
+      "output_directory": "./output/basic_contact",
+      "codegen_directory": "./codegen/rmd_generated_log",
+      "enable_output": true,
+      "fps": 1000
+    },
+    "simulation": {
+      "gravity": [
+        0.0,
+        -9.80665,
+        0.0
+      ],
+      "init_frictional_contact": true,
+      "max_time_step_size": 0.001
+    },
+    "execution": {
+      "end_simulation_time": 0.3
+    }
+  },
+  "objects": {
+    "rigidbodies": [
+      {
+        "id": "Body1",
+        "label": "Body1",
+        "mass": 62.8,
+        "inertia_diagonal": [
+          0.261666666666667,
+          1.04666666666667,
+          0.889666666666667
+        ],
+        "geometry": {
+          "type": "file",
+          "path": "../../../models/obj/basic_contact/Body1.obj"
+        },
+        "transform": {
+          "translation": [
+            0.0,
+            -0.15,
+            0.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      {
+        "id": "Body2",
+        "label": "Body2",
+        "mass": 4.11025038844665,
+        "inertia_diagonal": [
+          0.00411025038844665,
+          0.00411025038844665,
+          0.00411025038844665
+        ],
+        "geometry": {
+          "type": "file",
+          "path": "../../../models/obj/basic_contact/Body2.obj"
+        },
+        "transform": {
+          "translation": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    ]
+  },
+  "boundary_conditions": [
+    {
+      "type": "rigidbody_constraint",
+      "constraint_type": "fix",
+      "target": "Body1"
+    }
+  ],
+  "interactions": {
+    "contact": {
+      "global_params": {
+        "default_contact_thickness": 1e-05,
+        "min_contact_stiffness": 100000000.0,
+        "ipc_barrier_type": "log",
+        "strict_feasibility": true,
+        "ccd_eta": 0.9
+      },
+      "pairs": [
+        {
+          "object1": "Body1",
+          "object2": "Body2",
+          "enabled": true,
+          "friction": 0.0
+        }
+      ]
+    }
+  }
+}

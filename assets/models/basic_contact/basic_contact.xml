@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scene version="1.0">
+  <settings>
+    <output simulation_name="basic_contact" output_directory="./output/basic_contact" codegen_directory="./codegen/rmd_generated" enable_output="true" fps="1000" />
+    <simulation init_frictional_contact="true" gravity="0,-9.8066499999999994,0" />
+    <execution end_simulation_time="0.08" />
+  </settings>
+  <objects>
+    <rigidbodies>
+      <rigidbody id="Body1" label="Body1" mass="62.8" inertia_diagonal="0.26166666666666699,1.04666666666667,0.88966666666666705">
+        <geometry type="file" path="../../../models/obj/basic_contact/Body1.obj" />
+        <transform translation="0,-0.14999999999999999,0" rotation="0,0,0" />
+      </rigidbody>
+      <rigidbody id="Body2" label="Body2" mass="4.11025038844665" inertia_diagonal="0.00411025038844665,0.00411025038844665,0.00411025038844665">
+        <geometry type="file" path="../../../models/obj/basic_contact/Body2.obj" />
+        <transform translation="0,0,0" rotation="0,0,0" />
+      </rigidbody>
+    </rigidbodies>
+  </objects>
+  <boundary_conditions>
+    <rigidbody_constraint type="fix" target="Body1" />
+  </boundary_conditions>
+  <interactions>
+    <contact>
+      <global_params default_contact_thickness="1e-05" min_contact_stiffness="100000000.0" />
+      <friction_pair object1="Body1" object2="Body2" enabled="true" friction="0.0" />
+    </contact>
+  </interactions>
+</scene>

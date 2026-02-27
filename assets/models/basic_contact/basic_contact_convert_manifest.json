@@ -1,0 +1,11 @@
+{
+  "rmd": "E:/workspace/NexDynDiff/assets/models/basic_contact/basic_contact.rmd",
+  "json": "E:/workspace/NexDynDiff/assets/models/basic_contact/basic_contact.json",
+  "xml": null,
+  "mesh_dir": "E:/workspace/NexDynDiff/models/obj/basic_contact",
+  "parts": [
+    "Ground",
+    "Body1",
+    "Body2"
+  ]
+}
